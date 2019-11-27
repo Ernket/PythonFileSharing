@@ -35,7 +35,7 @@ def encode_data(data):
 
 def login_check(uname,password):
 	username="Elapse"
-	client_password="89ebcb70d4cb635c1d1c684e41ea7494"
+	client_password="md5password"  #这里是md5密码
 	if uname.decode()==username:
 		if password.decode() == client_password:
 			return "Login_success"
@@ -46,8 +46,10 @@ def login_check(uname,password):
 
 server.listen(5)
 print("已开启FTP服务..")
-
+check_close=""
 while True:
+	if check_close=="close":
+		break
 	conn,addr = server.accept()
 	print("检测到新连接: ", addr,"  正在验证身份...")
 	uname = conn.recv(6)
@@ -132,6 +134,7 @@ while True:
 			
 			if str(data.decode()) == ("close"):
 				print("服务关闭....")
+				check_close="close"
 				break
 	elif checking=="Login_Fail":
 		print("账户名或者密码错误")
