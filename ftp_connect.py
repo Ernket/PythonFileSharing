@@ -143,6 +143,9 @@ if logincheck.decode()=="login_succ":
 				receive_file_md5 = client.recv(1024)
 				print("MD5校验值: ", receive_file_md5.decode())
 				print("下载文件MD5校验值: ", new_file_md5)
+		elif cmd == ("close"):
+			client.send(cmd.encode())
+			break
 		else:
 			print("命令错误!")
 			continue
