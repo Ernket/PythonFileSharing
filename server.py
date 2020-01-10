@@ -1,9 +1,10 @@
 import socket
-import os
+import threading
 import hashlib
+import os
 import time
 import struct
-import hashlib
+
 print('''
 
  /$$$$$$$$ /$$
@@ -35,7 +36,7 @@ def encode_data(data):
 
 def login_check(uname,password):
 	username="Elapse"
-	client_password="md5password"  #这里是md5密码
+	client_password="84fb87d3de5a14b12cd6730ee1afcac8" # elapse
 	if uname.decode()==username:
 		if password.decode() == client_password:
 			return "Login_success"
@@ -43,15 +44,9 @@ def login_check(uname,password):
 			return "Login_Fail"
 	else:
 		return "Login_Fail"
-
-server.listen(5)
-print("已开启FTP服务..")
-check_close=""
-while True:
-	if check_close=="close":
-		break
-	conn,addr = server.accept()
-	print("检测到新连接: ", addr,"  正在验证身份...")
+def ftpstart():
+	global check_close
+	global conn
 	uname = conn.recv(6)
 	password=conn.recv(33)
 	checking=login_check(uname,password)
@@ -135,9 +130,20 @@ while True:
 			if str(data.decode()) == ("close"):
 				print("服务关闭....")
 				check_close="close"
-				break
 	elif checking=="Login_Fail":
 		print("账户名或者密码错误")
 		conn.send("login_fail".encode())
-		pass
+
+
+server.listen(5)
+print("已开启FTP服务..")
+check_close=""
+while True:
+	if check_close=="close":
+		break
+	conn,addr = server.accept()
+	if conn:
+		print("检测到新连接: ", addr,"  正在验证身份...")
+		t = threading.Thread(target=ftpstart)
+		t.start()
 server.close()
